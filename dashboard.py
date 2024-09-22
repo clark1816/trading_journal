@@ -7,14 +7,21 @@ import matplotlib.patches as patches
 import numpy as np
 import os
 import shutil
-    
+import uuid
+
+# Generate a unique user ID for the session
+if 'user_id' not in st.session_state:
+    st.session_state.user_id = str(uuid.uuid4())
+
+# Define the journal file path based on the user ID
+journal_file = f"trade_journal_copy_{st.session_state.user_id}.txt"
+   
 # Function to load journal entries
 def load_journal():
-    journal_file = 'trade_journal_copy.txt'
     if os.path.exists(journal_file):
         with open(journal_file, 'r') as f:
             return f.read()
-    return "No journal entries found."
+    return ""
    
 # Function to plot calendar
 def plot_calendar(daily_pnl, year, month):
@@ -138,7 +145,6 @@ def load_data(uploaded_files):
 
 # Function to save a journal entry with structured trade information
 def save_journal_entry(date, trade, notes):
-    journal_file = 'trade_journal_copy.txt'
     with open(journal_file, 'a') as f:
         entry = (
             f"Date: {date}\n"
@@ -163,7 +169,7 @@ def handle_file_upload(uploaded_file):
             f.write(uploaded_file.getbuffer())
         
         # Create a copy in the program folder
-        copy_file_path = f"trade_journal_copy.txt"  # Modify this as needed
+        copy_file_path = journal_file  # Modify this as needed
         shutil.copy(uploaded_file.name, copy_file_path)
 
         return copy_file_path  # Return the path of the copied file
